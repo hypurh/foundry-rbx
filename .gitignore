@@ -1,0 +1,6 @@
+# Dependencies
+Packages/
+
+# Generated / build artifacts
+build.rbxm
+sourcemap.json

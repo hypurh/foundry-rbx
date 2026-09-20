@@ -1,0 +1,10 @@
+[package]
+name = "hypurh/foundry"
+version = "0.1.0"
+authors = ["hypurh"]
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+exclude = ["selene.toml", "sourcemap.json", "rokit.toml", "roblox.yml", "build.rbxm"]
+
+[dependencies]
+Promise = "evaera/promise@4.0.0"

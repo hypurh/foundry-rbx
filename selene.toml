@@ -1,0 +1,4 @@
+std = "roblox"
+roblox-std-source = "pinned"
+
+multiple_statements = "allow"
