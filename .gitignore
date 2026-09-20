@@ -4,3 +4,6 @@ Packages/
 # Generated / build artifacts
 build.rbxm
 sourcemap.json
+
+# Miscellaneous
+TODO.md
