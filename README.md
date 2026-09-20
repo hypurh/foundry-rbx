@@ -1,6 +1,6 @@
 # *`foundry`*
 
-> Foundry is a Roblox module loader for organizing modules in a Folder, loading them asynchronously, and resolving module dependencies through `Loader:Get()`.
+> This is essentially a module loader factory.
 
 ## Install
 
