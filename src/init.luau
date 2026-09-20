@@ -5,7 +5,7 @@
 	██╔══╝  ██║   ██║██║   ██║██║╚██╗██║██║  ██║██╔══██╗  ╚██╔╝  
 	██║     ╚██████╔╝╚██████╔╝██║ ╚████║██████╔╝██║  ██║   ██║   
 	╚═╝      ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═════╝ ╚═╝  ╚═╝   ╚═╝   
-	a package by @nothypurh | © 2026-09-18 (yyyy-mm-dd)
+	a package by @nothypurh<roblox> @hypurh<github> | © 2026-09-18 (yyyy-mm-dd)
 	// all rights reserved: do not copy or redistribute
 
 	This is essentially a module loader factory.
