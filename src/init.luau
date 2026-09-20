@@ -5,19 +5,22 @@
 	██╔══╝  ██║   ██║██║   ██║██║╚██╗██║██║  ██║██╔══██╗  ╚██╔╝  
 	██║     ╚██████╔╝╚██████╔╝██║ ╚████║██████╔╝██║  ██║   ██║   
 	╚═╝      ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═════╝ ╚═╝  ╚═╝   ╚═╝   
-	a package by @nothypurh<roblox> @hypurh<github> | © 2026-09-18 (yyyy-mm-dd)
-	// all rights reserved: do not copy or redistribute
+	a package by @nothypurh<roblox> @hypurh<github> | © 2026 (yyyy-mm-dd)
+	// licensed under the MIT License
 
-	This is essentially a module loader factory.
+	Foundry is a Roblox module loader for organizing, loading, and resolving
+	ModuleScripts within a Folder.
 
 	notes:
 		* Modules must have the "Enabled" attribute set to true to be loaded.
-	
+		* ModuleScript names must be unique within the managed Folder.
+		* Circular dependencies through Loader:Get() are automatically detected.
+
 	dependencies:
 		* evaera/promise@4.0.0 -> ../Packages/Promise
 	
 	docs:
-		* will release soon
+		* https://wally.run/package/hypurh/foundry
 ]]
 
 
