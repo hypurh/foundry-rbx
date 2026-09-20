@@ -8,7 +8,7 @@ Add Foundry to your Roblox project with Wally:
 
 ```toml
 [dependencies]
-Foundry = "hypurh/foundry@0.1.0"
+Foundry = "hypurh/foundry@0.1.4"
 ```
 
 Then run:
