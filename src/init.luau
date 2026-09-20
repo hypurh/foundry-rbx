@@ -29,7 +29,6 @@ local Promise = require("../Packages/Promise")
 
 ---- CORE MODULES ----
 local Types = require("@self/Types")
--- local Config = require("@self/Config") -- will add later
 
 
 ---- CONSTANTS ----
@@ -74,12 +73,13 @@ function loader.YieldTillLoaded(self: LoaderObject)
 end
 
 -- Returns the record module, yielding until it finishes loading if necessary.
+-- Returns the record module, yielding until it finishes loading if necessary.
 function loader.Get(self: LoaderObject, name: string)
 	assert(self._initialized, `Loader for Folder "{self.Folder:GetFullName()}" has not been initialized!`)
 
 	local dependency = self._cache[name]
 	if not dependency then
-		warn(`Module: {name} not recorded - May not exist or be disabled.`)
+		warn(`Module "{name}" not found or is disabled.`)
 		return
 	end
 
@@ -92,8 +92,8 @@ function loader.Get(self: LoaderObject, name: string)
 		local visited = {}
 		local function hasPath(current)
 			if current == requester then return true end
-
 			if visited[current] then return false end
+
 			visited[current] = true
 
 			for dependencyName in current.dependencies do
@@ -104,13 +104,11 @@ function loader.Get(self: LoaderObject, name: string)
 			return false
 		end
 
-		assert(not hasPath(dependency), `Circular dependency detected involving module: "{requester.name or "..."}" <-> "{name}"!`)
+		assert(not hasPath(dependency), `Circular dependency detected: "{requester.name}" -> "{name}"`)
 	end
 
 	local success, result = dependency.promise:await()
-	if not success then
-		error(`Failed to load module "{name}" for Folder "{self.Folder:GetFullName()}": {result}`, 2)
-	end
+	if not success then error(result, 2) end
 
 	return result
 end
@@ -159,10 +157,7 @@ function loader.Init(self: LoaderObject, ...)
 			record._resolve = _resolve
 			record._reject = _reject
 		end)
-		promise:catch(function(err)
-			warn(`Module: "{name}" experienced an error while loading:`)
-			warn(`	└─ {err}`)
-		end)
+		promise:catch(function() end)
 		record.promise = promise
 
 		self._cache[name] = record
@@ -178,7 +173,7 @@ function loader.Init(self: LoaderObject, ...)
 				if success then
 					record.module = result
 					record._resolve(result)
-					
+
 				else record._reject(result) end
 
 				pendingModules -= 1
@@ -192,8 +187,7 @@ function loader.Init(self: LoaderObject, ...)
 			end)
 
 			if not success then
-				warn(`Failed to require module "{name}":`)
-				warn(`	└─ {result}`)
+				warn(`Failed to require "{name}": {result}`)
 				finish(false, result)
 				return
 			end
@@ -204,8 +198,7 @@ function loader.Init(self: LoaderObject, ...)
 				local initSuccess, initErr = pcall(result.Init, result, self, context)
 
 				if not initSuccess then
-					warn(`Failed to init module "{name}":`)
-					warn(`	└─ {initErr}`)
+					warn(`Failed to initialize "{name}": {initErr}`)
 					finish(false, initErr)
 					return
 				end
