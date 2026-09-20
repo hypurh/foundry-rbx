@@ -14,7 +14,6 @@
 	notes:
 		* Modules must have the "Enabled" attribute set to true to be loaded.
 		* ModuleScript names must be unique within the managed Folder.
-		* Circular dependencies through Loader:Get() are automatically detected.
 
 	dependencies:
 		* evaera/promise@4.0.0 -> ../Packages/Promise
@@ -30,7 +29,7 @@ local Promise = require("../Packages/Promise")
 
 ---- CORE MODULES ----
 local Types = require("@self/Types")
--- local Config = require("@self/Config")
+-- local Config = require("@self/Config") -- will add later
 
 
 ---- CONSTANTS ----
@@ -69,7 +68,7 @@ function loader.new(config: {Folder: Folder}): LoaderObject
 	return self
 end
 
--- If neccessary, yields till the loader has loaded.
+-- If necessary, yields till the loader has loaded.
 function loader.YieldTillLoaded(self: LoaderObject)
 	if not self._loaded then self.Loaded:await() end
 end
@@ -105,7 +104,7 @@ function loader.Get(self: LoaderObject, name: string)
 			return false
 		end
 
-		assert(not hasPath(dependency), `Circular dependency detected involving module: "{name}"!`)
+		assert(not hasPath(dependency), `Circular dependency detected involving module: "{requester.name or "..."}" <-> "{name}"!`)
 	end
 
 	local success, result = dependency.promise:await()
@@ -122,7 +121,6 @@ function loader.Init(self: LoaderObject, ...)
 	self._initialized = true
 
 	local context = ...
-
 	local pendingModules = 0
 
 	local function pendingUpdated()
@@ -132,7 +130,6 @@ function loader.Init(self: LoaderObject, ...)
 		end
 	end
 
-	local selectedModuleScripts = {}
 	for _, moduleScript in self.Folder:GetChildren() do
 		if not moduleScript:IsA("ModuleScript") then continue end
 		if not moduleScript:GetAttribute("Enabled") then
@@ -141,13 +138,11 @@ function loader.Init(self: LoaderObject, ...)
 		end
 
 		local name = moduleScript.Name
-		assert(not selectedModuleScripts[name], `Duplicate module "{name}" found in Folder "{self.Folder:GetFullName()}"! Module names must be unique.`)
+		assert(not self._cache[name], `Duplicate module "{name}" found in Folder "{self.Folder:GetFullName()}"! Module names must be unique.`)
 
 		pendingModules += 1
 
-		selectedModuleScripts[name] = moduleScript
-
-		self._cache[name] = {
+		local record = {
 			name = name,
 
 			instance = moduleScript,
@@ -157,50 +152,41 @@ function loader.Init(self: LoaderObject, ...)
 			_resolve = nil,
 			_reject = nil,
 
-			thread = nil,
 			dependencies = {},
-
-			_loading = true,
 		}
-		local record = self._cache[name]
 
-		local promise = Promise.new(function(resolve, reject)
-			record._resolve = resolve
-			record._reject = reject
+		local promise = Promise.new(function(_resolve, _reject)
+			record._resolve = _resolve
+			record._reject = _reject
 		end)
-
-		promise:catch(function() end)
+		promise:catch(function(err)
+			warn(`Module: "{name}" experienced an error while loading:`)
+			warn(`	└─ {err}`)
+		end)
 		record.promise = promise
+
+		self._cache[name] = record
 	end
-
-	for name, moduleScript in selectedModuleScripts do
-		local record = self._cache[name]
-		local resolve = record._resolve
-		local reject = record._reject
-
+	for name, record in self._cache do
 		task.spawn(function()
-			assert(record, `Record for "{name}" missing!`)
-
 			local thread = coroutine.running()
-			record.thread = thread
 			self._threads[thread] = record
 
 			local function finish(success: boolean, result: any)
 				self._threads[thread] = nil
-				record._loading = false
 
 				if success then
 					record.module = result
-					resolve(result)
-
-				else reject(result) end
+					record._resolve(result)
+					
+				else record._reject(result) end
 
 				pendingModules -= 1
 				pendingUpdated()
 			end
 
 			local success, result = pcall(function()
-				local module = require(moduleScript)
+				local module = require(record.instance)
 				assert(type(module) == "table", "Module is not a table")
 				return module
 			end)
@@ -228,6 +214,7 @@ function loader.Init(self: LoaderObject, ...)
 			finish(true, result)
 		end)
 	end
+
 	pendingUpdated()
 
 	return self

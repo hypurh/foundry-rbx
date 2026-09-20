@@ -15,15 +15,12 @@ type LoaderCacheValue = {
 
 	instance: ModuleScript,
 	module: Module?,
-	thread: thread?,
 	
 	promise: Promise,
 	_resolve: (module: Module) -> (),
 	_reject: (err: string) -> (),
 
 	dependencies: {[string]: boolean},
-
-	_loading: boolean,
 }
 type LoaderCache = {[string]: LoaderCacheValue}
 
