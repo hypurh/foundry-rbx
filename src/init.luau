@@ -24,7 +24,7 @@
 
 
 ---- DEPENDENCIES ----
-local Promise = require("../Packages/Promise")
+local Promise = require("./Promise")
 
 
 ---- CORE MODULES ----

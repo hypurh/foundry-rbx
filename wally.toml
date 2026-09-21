@@ -8,4 +8,4 @@ realm = "shared"
 exclude = ["selene.toml", "sourcemap.json", "rokit.toml", "roblox.yml", "build.rbxm"]
 
 [dependencies]
-Promise = "evaera/promise@4.0.0"
+promise = "evaera/promise@4.0.0"
