@@ -1,7 +1,7 @@
 [package]
 name = "hypurh/foundry"
 description = "This is essentially a module loader factory."
-version = "0.1.4"
+version = "0.1.5"
 authors = ["hypurh"]
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
