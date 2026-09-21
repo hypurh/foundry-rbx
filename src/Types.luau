@@ -1,4 +1,4 @@
-local Promise = require("../Promise")
+local Promise = require("../promise")
 
 export type Promise = typeof(Promise.new())
 
